@@ -27,9 +27,9 @@ For each video file found, the script will:
 
 To use this script, simply run it in a Python environment where OpenCV is installed. Make sure your video files are in the 'Videos' directory.
 
-\`\`\`python
+```python
 python3 video_frame_extractor.py
-\`\`\`
+```
 
 ## Output
 

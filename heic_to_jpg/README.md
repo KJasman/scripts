@@ -10,10 +10,10 @@ This Python script is used to convert HEIC image files to JPEG format. It uses t
 
 Before running the script, you need to install Wand and its dependencies:
 
-\`\`\`bash
+```bash
 pip install wand
 brew install freetype imagemagick
-\`\`\`
+```
 
 ## How it works
 
@@ -27,9 +27,9 @@ The script then iterates over all files in the source folder. If a file ends wit
 
 To use this script, simply run it in a Python environment where Wand is installed. Make sure your HEIC files are in the source folder.
 
-\`\`\`python
+```python
 python3 heic_to_jpeg_converter.py
-\`\`\`
+```
 
 ## Output
 
