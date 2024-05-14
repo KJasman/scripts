@@ -1,2 +1,4 @@
 # Default MacOS Finder environment
-.DS_STORE
+**/.DS_STORE
+# Python Venv
+**/venv/
