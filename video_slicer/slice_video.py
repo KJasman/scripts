@@ -50,35 +50,38 @@ def process_video(video_file: str, base_path: str, stills_base_path: str) -> str
     
     # Calculate frame interval (extract a frame every 5 seconds)
     frame_interval = round(5.0 * fps)
-    frame_counter = 0
-    image_index = 1
     
-    # Create a subdirectory for this video's frames, maintaining the original directory structure
-    relative_path = os.path.relpath(video_file, base_path)
-    video_stills_path = os.path.join(stills_base_path, os.path.dirname(relative_path), os.path.splitext(os.path.basename(video_file))[0])
+    # Get the parent file name without extension
+    parent_name = os.path.splitext(os.path.basename(video_file))[0]
+    
+    # Create a subdirectory for this video's frames, using the video's name
+    video_stills_path = os.path.join(stills_base_path, parent_name)
     os.makedirs(video_stills_path, exist_ok=True)
     
     # Process frames
-    while True:
-        # Read the next frame
+    frames_extracted = 0
+    for frame_number in range(0, total_frames, frame_interval):
+        # Set the video capture object to the desired frame
+        video.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+        
+        # Read the frame
         ret, frame = video.read()
         if not ret:
-            break  # End of video
+            break  # End of video or error reading frame
         
-        # If we've reached a frame we want to extract
-        if frame_counter % frame_interval == 0:
-            # Resize the frame to 640x480
-            resized_frame = cv2.resize(frame, (640, 480))
-            # Save the frame as a JPEG file
-            cv2.imwrite(os.path.join(video_stills_path, f'frame_{image_index}.jpeg'), resized_frame)
-            image_index += 1
+        # Resize the frame to 640x480
+        resized_frame = cv2.resize(frame, (640, 480))
         
-        frame_counter += 1
+        # Save the frame as a JPEG file
+        output_filename = f'{parent_name}_frame_{frames_extracted + 1}.jpeg'
+        cv2.imwrite(os.path.join(video_stills_path, output_filename), resized_frame)
+        
+        frames_extracted += 1
     
     # Close the video file
     video.release()
     
-    completion_message = f"Completed processing {os.path.basename(video_file)}. Extracted {image_index-1} frames."
+    completion_message = f"Completed processing {os.path.basename(video_file)}. Extracted {frames_extracted} frames."
     print(completion_message)
     return completion_message
 
