@@ -35,7 +35,7 @@ This Python script extracts frames from video files in a specified directory and
 
 ## Usage
 
-Run the script from the command line, providing the absolute path to the directory containing your videos: python video_frame_extractor.py /path/to/your/video/directory
+Run the script from the command line, providing the absolute path to the directory containing your videos: `python video_frame_extractor.py /path/to/your/video/directory`
 
 ## Output
 
