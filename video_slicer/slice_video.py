@@ -46,11 +46,15 @@ for video_file in video_files:
 
         # If frame is at the desired interval
         if frame_counter % frame_interval == 0:
-            cv2.imwrite('{}/frame_{}_{}.png'.format(new_dir_path, parsed_ext, image_index), frame)
+            # resize to 640 x 480 
+            resized_frame = cv2.resize(frame, (640, 480))
+            cv2.imwrite('{}/frame_{}_{}.png'.format(new_dir_path, parsed_ext, image_index), resized_frame)
+            
             image_index += 1
 
         # Increment frame counter
         frame_counter += 1
+        
     
     # Close video file when the last frame is reached
     video.release()
