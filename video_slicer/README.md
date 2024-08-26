@@ -1,40 +1,51 @@
 # Video Frame Extractor
 
-This Python script is used to extract frames from video files. It uses the OpenCV library to read video files and write frames as images.
+This Python script extracts frames from video files in a specified directory and its subdirectories. It uses the OpenCV library to process videos and save frames as images.
 
 ## Dependencies
 
 - OpenCV (cv2)
 - os
-- glob
+- typing
+- argparse
+- tqdm
+
+## Features
+
+- Recursively searches for video files in the specified directory and its subdirectories
+- Extracts frames at 2-second intervals from each video
+- Resizes frames to 640x480 resolution (customizable)
+- Saves frames as JPEG images
+- Maintains directory structure for extracted frames
+- Provides progress bars for overall processing and individual video frame extraction
 
 ## How it works
 
-The script first searches for all video files in the 'Videos' directory with the extensions '.mp4' and '.MP4'. You can add more video file extensions as needed.
-
-If no compatible video files are found, the script will print a message and exit.
-
-For each video file found, the script will:
-
-1. Open the video file.
-2. Get the frame rate of the video.
-3. Calculate the frame number to capture every 2 seconds.
-4. Read each frame in the video.
-5. If the current frame is at the desired interval, it will save the frame as an image in the 'Stills' directory with the format 'frame_{video_name}_{frame_index}.png'.
-6. Once all frames have been read, it will close the video file and move on to the next one.
+1. The script searches for all video files (currently .mp4 and .MP4) in the specified directory and its subdirectories.
+2. It creates a 'Stills' directory at the same level as the input directory to store extracted frames.
+3. For each video file found, the script:
+   - Opens the video file
+   - Calculates the frame interval to extract a frame every 2 seconds
+   - Creates a subdirectory for the video's frames, maintaining the original directory structure
+   - Extracts frames at the calculated interval, resizing them to 640x480
+   - Saves the frames as JPEG images in the corresponding subdirectory
 
 ## Usage
 
-To use this script, simply run it in a Python environment where OpenCV is installed. Make sure your video files are in the 'Videos' directory.
+Run the script from the command line, providing the absolute path to the directory containing your videos:
 
-```python
-python3 video_frame_extractor.py
+```
+python video_frame_extractor.py /path/to/your/video/directory
 ```
 
 ## Output
 
-The output images will be saved in the 'Stills' directory. Each image will be named in the format 'frame_{video_name}_{frame_index}.png', where {video_name} is the name of the video file (without extension) and {frame_index} is the index of the frame in the video.
+The extracted frames will be saved in a 'Stills' directory created at the same level as the input directory. The original directory structure is maintained within the 'Stills' directory.
 
-## Note
+Each frame is saved as a JPEG file named 'frame_{index}.jpeg' within a subdirectory corresponding to its source video.
 
-This script assumes that the 'Videos' and 'Stills' directories exist in the same directory as the script. If they do not exist, you will need to create them before running the script.
+## Notes
+
+- The script currently supports .mp4 and .MP4 video files. You can modify the script to include additional video formats if needed.
+- Frames are extracted every 2 seconds. You can adjust this interval by modifying the `frame_interval` calculation in the `extract_frames` function.
+- The script provides progress information and statistics for each video processed.
