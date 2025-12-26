@@ -1,5 +1,16 @@
 # Instagram Post Extractor & Viewer
 
+The purpose of this tool is to assist with small business owners who are looking 
+to transition from Instagram-driven stores to either a proprietary online 
+e-commerce platform (e.g. Shopify, Hostinger, Wix). 
+
+This tool allows users to bulk extract and filter Instagram posts and find exactly
+the listing they want. 
+
+This tool is somewhat unrefined at the moment, but it is designed to meet the very
+niche needs of some "makers" that sell via Instagram. Functionality may be expanded
+by request or PR. 
+
 ## Extract Posts
 
 1. Run `extract_posts.bat`
