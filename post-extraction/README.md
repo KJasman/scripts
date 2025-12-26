@@ -1,7 +1,7 @@
 # Instagram Post Extractor & Viewer
 
 The purpose of this tool is to assist with small business owners who are looking 
-to transition from Instagram-driven stores to either a proprietary online 
+to transition from Instagram-driven stores to a proprietary online 
 e-commerce platform (e.g. Shopify, Hostinger, Wix). 
 
 This tool allows users to bulk extract and filter Instagram posts and find exactly
