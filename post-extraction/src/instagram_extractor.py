@@ -3,8 +3,9 @@ import json
 from pathlib import Path
 
 class InstagramExtractor:
-    def __init__(self, username, output_dir="instagram_posts"):
+    def __init__(self, username, keyword, output_dir):
         self.username = username
+        self.keyword = keyword
         self.output_dir = Path(output_dir)
         self.media_dir = self.output_dir / "media"
         self.data_dir = self.output_dir / "data"
@@ -44,9 +45,11 @@ class InstagramExtractor:
             self.loader.save_session_to_file()
             print("Login successful with 2FA!")
     
-    def extract_available_posts(self):
-        """Extract all posts with 'AVAILABLE' in the caption"""
-        print(f"\nFetching posts from @{self.username}...")
+    def extract_posts(self):
+        """Extract all posts matching the keyword in the caption"""
+        keyword = self.keyword.upper()
+        
+        print(f"\nFetching posts from @{self.username} with keyword '{self.keyword}'...")
         profile = instaloader.Profile.from_username(self.loader.context, self.username)
         
         posts_data = []
@@ -58,7 +61,7 @@ class InstagramExtractor:
             post_count += 1
             caption = post.caption if post.caption else ""
             
-            if "AVAILABLE" in caption.upper():
+            if keyword in caption.upper():
                 available_count += 1
                 
                 # Check if post already exists
@@ -76,7 +79,7 @@ class InstagramExtractor:
                     posts_data.append(post_info)
                     break  # Stop checking older posts
                 
-                print(f"\n[{available_count}] Found AVAILABLE post: {post.shortcode}")
+                print(f"\n[{available_count}] Found {keyword} post: {post.shortcode}")
                 
                 # Create unique folder for this post
                 post_dir.mkdir(exist_ok=True)
@@ -111,7 +114,7 @@ class InstagramExtractor:
         print(f"\n{'='*50}")
         print(f"Extraction complete!")
         print(f"Total posts scanned: {post_count}")
-        print(f"Posts with 'AVAILABLE': {available_count}")
+        print(f"Posts with '{self.keyword}': {available_count}")
         print(f"Already downloaded (skipped): {skipped_count}")
         print(f"Newly downloaded: {available_count - skipped_count}")
         print(f"Data saved to: {self.output_dir}")
@@ -127,13 +130,13 @@ class InstagramExtractor:
             for idx, node in enumerate(post.get_sidecar_nodes(), 1):
                 if node.is_video:
                     filename = f"{post.shortcode}_{idx}.mp4"
-                    filepath = post_dir / f"{post.shortcode}_{idx}"  # No extension - download_pic adds it
+                    filepath = post_dir / f"{post.shortcode}_{idx}"  
                     self.loader.download_pic(filename=str(filepath), 
                                             url=node.video_url, 
                                             mtime=post.date_utc)
                 else:
                     filename = f"{post.shortcode}_{idx}.jpg"
-                    filepath = post_dir / f"{post.shortcode}_{idx}"  # No extension - download_pic adds it
+                    filepath = post_dir / f"{post.shortcode}_{idx}" 
                     self.loader.download_pic(filename=str(filepath), 
                                             url=node.display_url, 
                                             mtime=post.date_utc)
@@ -141,13 +144,13 @@ class InstagramExtractor:
         else:  # Single image or video
             if post.is_video:
                 filename = f"{post.shortcode}.mp4"
-                filepath = post_dir / post.shortcode  # No extension - download_pic adds it
+                filepath = post_dir / post.shortcode 
                 self.loader.download_pic(filename=str(filepath), 
                                         url=post.video_url, 
                                         mtime=post.date_utc)
             else:
                 filename = f"{post.shortcode}.jpg"
-                filepath = post_dir / post.shortcode  # No extension - download_pic adds it
+                filepath = post_dir / post.shortcode  
                 self.loader.download_pic(filename=str(filepath), 
                                         url=post.url, 
                                         mtime=post.date_utc)
@@ -161,18 +164,29 @@ def main():
     
     print("Instagram Post Extractor")
     print("=" * 50)
-    
-    # Get credentials\
+
+    # Get credentials
     extract_target = input("Enter Instagram profile to extract from: ").strip()
     login_username = input("Enter Instagram username: ").strip()
     password = getpass.getpass("Enter Instagram password: ")
     
+    # Get search keyword
+    while True:
+        keyword = input("Enter keyword to search for in posts: ").strip()
+        if keyword:
+            break
+        print("Keyword cannot be empty. Please try again.")
+    
+    # Create output directory named after keyword
+    safe_keyword = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in keyword)
+    output_dir = f"posts_{safe_keyword}"
+    
     # Create extractor
-    extractor = InstagramExtractor(extract_target)
+    extractor = InstagramExtractor(extract_target, keyword=keyword, output_dir=output_dir)
     
     # Login and extract
     extractor.login(login_username, password)
-    extractor.extract_available_posts()
+    extractor.extract_posts()
 
 
 if __name__ == "__main__":
