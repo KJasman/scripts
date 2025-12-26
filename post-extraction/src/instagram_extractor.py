@@ -10,7 +10,6 @@ class InstagramExtractor:
         self.media_dir = self.output_dir / "media"
         self.data_dir = self.output_dir / "data"
         
-        # Create directories
         self.media_dir.mkdir(parents=True, exist_ok=True)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         
@@ -64,7 +63,6 @@ class InstagramExtractor:
             if keyword in caption.upper():
                 available_count += 1
                 
-                # Check if post already exists
                 post_dir = self.media_dir / post.shortcode
                 json_path = self.data_dir / f"{post.shortcode}.json"
                 
@@ -73,21 +71,16 @@ class InstagramExtractor:
                     print("Stopping - assuming all older posts are already downloaded.")
                     skipped_count += 1
                     
-                    # Load existing post data for index
                     with open(json_path, 'r', encoding='utf-8') as f:
                         post_info = json.load(f)
                     posts_data.append(post_info)
-                    break  # Stop checking older posts
+                    break
                 
                 print(f"\n[{available_count}] Found {keyword} post: {post.shortcode}")
                 
-                # Create unique folder for this post
                 post_dir.mkdir(exist_ok=True)
-                
-                # Download media
                 media_files = self._download_post_media(post, post_dir)
                 
-                # Save post data
                 post_info = {
                     "shortcode": post.shortcode,
                     "date": post.date_utc.isoformat(),
@@ -100,13 +93,11 @@ class InstagramExtractor:
                 
                 posts_data.append(post_info)
                 
-                # Save individual JSON
                 with open(json_path, 'w', encoding='utf-8') as f:
                     json.dump(post_info, f, indent=2, ensure_ascii=False)
                 
                 print(f"  Saved {len(media_files)} media file(s)")
         
-        # Save master index
         index_path = self.data_dir / "index.json"
         with open(index_path, 'w', encoding='utf-8') as f:
             json.dump(posts_data, f, indent=2, ensure_ascii=False)
@@ -126,7 +117,7 @@ class InstagramExtractor:
         """Download all media from a post"""
         media_files = []
         
-        if post.typename == 'GraphSidecar':  # Multiple images/videos
+        if post.typename == 'GraphSidecar':
             for idx, node in enumerate(post.get_sidecar_nodes(), 1):
                 if node.is_video:
                     filename = f"{post.shortcode}_{idx}.mp4"
@@ -141,7 +132,7 @@ class InstagramExtractor:
                                             url=node.display_url, 
                                             mtime=post.date_utc)
                 media_files.append(filename)
-        else:  # Single image or video
+        else:
             if post.is_video:
                 filename = f"{post.shortcode}.mp4"
                 filepath = post_dir / post.shortcode 
@@ -165,26 +156,21 @@ def main():
     print("Instagram Post Extractor")
     print("=" * 50)
 
-    # Get credentials
     extract_target = input("Enter Instagram profile to extract from: ").strip()
     login_username = input("Enter Instagram username: ").strip()
     password = getpass.getpass("Enter Instagram password: ")
     
-    # Get search keyword
     while True:
         keyword = input("Enter keyword to search for in posts: ").strip()
         if keyword:
             break
         print("Keyword cannot be empty. Please try again.")
     
-    # Create output directory named after keyword
     safe_keyword = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in keyword)
-    output_dir = f"posts_{safe_keyword}"
+    output_dir = f"instagram_posts/posts_{safe_keyword}"
     
-    # Create extractor
     extractor = InstagramExtractor(extract_target, keyword=keyword, output_dir=output_dir)
     
-    # Login and extract
     extractor.login(login_username, password)
     extractor.extract_posts()
 
